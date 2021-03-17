@@ -10,7 +10,7 @@ const request = function (url, method, data) {
   return axios({ url, method, data });
 };
 
-test.only("Should get posts", async function () {
+test("Should get posts", async function () {
   const post1 = await postsService.savePost({
     title: generate(),
     content: generate(),
@@ -31,11 +31,29 @@ test.only("Should get posts", async function () {
   await postsService.deletePost(post3.id);
 });
 
-test.only("Should save posts", async function () {
+test("Should save posts", async function () {
   const data = { title: generate(), content: generate() };
   const response = await request("http://localhost:3000/posts", "posts", data);
-  const posts = response.data;
+  const post = response.data;
   expect(post.title).toBe(data.title);
   expect(post.content).toBe(data.content);
+  await postsService.deletePost(post1.id);
+});
+
+test("Should update posts", async function () {
+  const post = await postsService.savePost({
+    title: generate(),
+    content: generate(),
+  });
+  post.title = generate();
+  post.content() = generate();
+  const response = await request(
+    `http://localhost:3000/posts/${post.id}`,
+    "put",
+    post
+  );
+  const updatePost = await postsService.getPost(post.id);
+  expect(updatePost.title).toBe(post.title);
+  expect(updatePost.content).toBe(post.content);
   await postsService.deletePost(post1.id);
 });
